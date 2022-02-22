@@ -31,6 +31,45 @@ void ANPCharacterBase::BeginPlay()
 	
 }
 
+void ANPCharacterBase::EquipWeapon(AActor* Weapon)
+{
+	if (Weapon && EquippedWeapon != Weapon)
+	{
+		// Здесь, думается, нужно будет репликацию прикручивать.
+		EquippedWeapon = Weapon;
+		// Вот прямо тут. Хотя, тут же будет абилитя.
+		//ASC->CallAbility(EquipMeleeWeapon)
+	}
+}
+
+void ANPCharacterBase::DoMeleeAttack()
+{
+	if (!MeleeWeapon)
+	{
+		return;
+	}
+
+	if (EquippedWeapon != MeleeWeapon)
+	{
+		//ASC->CallAbility(EquipWeapon(MeleeWeapon))
+	}
+
+	//ASC->CallAbility(MeleeAttack)
+}
+
+void ANPCharacterBase::DoRangedAttack()
+{
+	if (!MeleeWeapon)
+	{
+		return;
+	}
+
+	if (EquippedWeapon != MeleeWeapon)
+	{
+
+	}
+}
+
 // Called every frame
 void ANPCharacterBase::Tick(float DeltaTime)
 {

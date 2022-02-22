@@ -4,11 +4,15 @@
 
 //#include "CoreMinimal.h"
 #include "NoPasaran.h"
-#include "AbilitySystemInterface.h"
-#include "GameFramework/Character.h"
 #include "GAS/NPAbilitySystemComponent.h"
 #include "GAS/NPAttributeSet.h"
+
+#include "AbilitySystemInterface.h"
+#include "GameFramework/Character.h"
 #include "NPCharacterBase.generated.h"
+
+class UNPAbilitySystemComponent;
+class UNPAttributeSet;
 
 class UGameplayEffect;
 
@@ -33,6 +37,15 @@ protected:
 	UPROPERTY()
 	UNPAttributeSet* AttributeSet;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
+	AActor* MeleeWeapon;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
+	AActor* RangeWeapon;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
+	AActor* EquippedWeapon;
+
 	//Блеать, херня какая-то... Всё не так.
 	/** Passive gameplay effects that initializes attributes defaults */
 	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = ""Abilities"")
@@ -52,8 +65,15 @@ protected:
 
 public:	
 	
-	//virtual void InitializeAttributes();
-	
+	UFUNCTION()
+	void EquipWeapon(AActor* Weapon);
+
+	UFUNCTION()
+	void DoMeleeAttack();
+
+	UFUNCTION()
+	void DoRangedAttack();
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

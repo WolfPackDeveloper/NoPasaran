@@ -2,10 +2,22 @@
 
 
 #include "GAS/NPAttributeSet.h"
+#include "Core/NPCharacterBase.h"
+//#include "GameplayEffect.h"
+#include "GameplayEffectExtension.h"
 
 UNPAttributeSet::UNPAttributeSet()
 {
+	// Для начала. Потом всё это должно переехать в таблицы.
+	MaxHealth = 100.f;
+	Health = MaxHealth;
+	MaxConcentration = 100.f;
+	Concentration = MaxConcentration;
+	AttackPower = 10.f;
+	DefensePower = 10.f;
+	Damage = 0.f;
 
+	MoveSpeed = 600.f;
 }
 
 void UNPAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -19,6 +31,32 @@ void UNPAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 	DOREPLIFETIME(UNPAttributeSet, AttackPower);
 	DOREPLIFETIME(UNPAttributeSet, DefensePower);
 	DOREPLIFETIME(UNPAttributeSet, MoveSpeed);
+}
+
+bool UNPAttributeSet::PreGameplayEffectExecute(struct FGameplayEffectModCallbackData& Data)
+{
+	Super::PreGameplayEffectExecute(Data);
+
+	return true;
+}
+
+void UNPAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data)
+{
+	Super::PostGameplayEffectExecute(Data);
+
+	// Зажатый косинус.)
+	if(Data.EvaluatedData.Attribute == GetHealthAttribute())
+	{
+		SetHealth(FMath::Clamp(GetHealth(), 0.f, GetMaxHealth()));
+
+		//Умертвить, если 0. Мутно... А можно по-другому?
+		//ANPCharacterBase* Player = Cast<ANPCharacterBase>(Data.Target.GetOwnerActor());
+		//if (Player && GetHealth() <= 0.f)
+		//{
+			//Player->SetPlayerIsAlive(false);
+		//}
+
+	}
 }
 
 void UNPAttributeSet::OnRep_Health(const FGameplayAttributeData& OldValue)
