@@ -5,6 +5,7 @@
 #include "Core/NPCharacterBase.h"
 //#include "GameplayEffect.h"
 #include "GameplayEffectExtension.h"
+#include "Net/UnrealNetwork.h"
 
 UNPAttributeSet::UNPAttributeSet()
 {
@@ -61,7 +62,7 @@ void UNPAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectModC
 
 void UNPAttributeSet::OnRep_Health(const FGameplayAttributeData& OldValue)
 {
-
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UNPAttributeSet, Health, OldValue);
 }
 
 void UNPAttributeSet::OnRep_MaxHealth(const FGameplayAttributeData& OldValue)

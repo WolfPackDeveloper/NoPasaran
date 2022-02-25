@@ -2,8 +2,8 @@
 
 #pragma once
 
-//#include "CoreMinimal.h"
-#include "NoPasaran.h"
+#include "CoreMinimal.h"
+#include "Core/NPTypes.h"
 #include "Abilities/GameplayAbility.h"
 #include "NPGameplayAbility.generated.h"
 

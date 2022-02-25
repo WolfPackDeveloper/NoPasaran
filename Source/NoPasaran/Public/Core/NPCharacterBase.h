@@ -2,19 +2,24 @@
 
 #pragma once
 
-//#include "CoreMinimal.h"
-#include "NoPasaran.h"
-#include "GAS/NPAbilitySystemComponent.h"
-#include "GAS/NPAttributeSet.h"
+#include "CoreMinimal.h"
+#include "Core/NPTypes.h"
+
+//#include "GAS/NPGameplayAbility.h"
+//#include "GAS/NPAbilitySystemComponent.h"
+//#include "GAS/NPAttributeSet.h"
 
 #include "AbilitySystemInterface.h"
 #include "GameFramework/Character.h"
 #include "NPCharacterBase.generated.h"
 
+// Можно зафорвардить свои классы системы GAS. Пока не понял, как лучше.
+class UNPGameplayAbility;
 class UNPAbilitySystemComponent;
 class UNPAttributeSet;
 
 class UGameplayEffect;
+
 
 UCLASS()
 class NOPASARAN_API ANPCharacterBase : public ACharacter, public IAbilitySystemInterface
@@ -29,13 +34,31 @@ public:
 
 protected:
 	
+	// ==============================
+	//		Ability System
+	// ==============================
+
 	/** The component used to handle ability system interactions */
-	UPROPERTY()
+	// Некий чувак предлагает юзать тут TObjectPTR...
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UNPAbilitySystemComponent* AbilitySystemComponent;
 
 	/** List of attributes modified by the ability system */
 	UPROPERTY()
 	UNPAttributeSet* AttributeSet;
+
+	/* Effects to initialize Attributes */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Abilities")
+	TArray<TSubclassOf<UGameplayEffect>> PassiveGameplayEffects;
+
+	/* GameplayAbilities are owned by Character*/
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Abilities")
+	TArray<TSubclassOf<UGameplayEffect>> GameplayAbilities;
+
+	UPROPERTY()
+	bool bAbilitiesInitiallized = false;
+
+	// ==============================
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
 	AActor* MeleeWeapon;
@@ -46,22 +69,11 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
 	AActor* EquippedWeapon;
 
-	//Блеать, херня какая-то... Всё не так.
-	/** Passive gameplay effects that initializes attributes defaults */
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = ""Abilities"")
-	//TArray<TSubclassOf<UGameplayEffect>> DefaultAttributesEffects;
-
-
-	/** Abilities to grant to this character on creation. These will be activated by tag or event and are not bound to specific inputs */
-	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Abilities)
-	//TArray<TSubclassOf<URPGGameplayAbility>> GameplayAbilities;
-
-	/** Passive gameplay effects applied on creation */
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Abilities)
-	//TArray<TSubclassOf<UGameplayEffect>> PassiveGameplayEffects;
-
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	virtual void PossessedBy(AController* NewController) override;
+	virtual void OnRep_PlayerState() override;
 
 public:	
 	

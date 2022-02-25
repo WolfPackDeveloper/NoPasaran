@@ -2,6 +2,11 @@
 
 
 #include "Core/NPCharacterBase.h"
+
+#include "GAS/NPGameplayAbility.h"
+#include "GAS/NPAbilitySystemComponent.h"
+#include "GAS/NPAttributeSet.h"
+
 #include "GameplayEffect.h"
 
 // Sets default values
@@ -13,7 +18,7 @@ ANPCharacterBase::ANPCharacterBase()
 	AbilitySystemComponent = CreateDefaultSubobject<UNPAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 	AbilitySystemComponent->SetIsReplicated(true);
 	//Разобраться, как лучше
-	//AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
+	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
 
 	AttributeSet = CreateDefaultSubobject<UNPAttributeSet>(TEXT("AttributeSet"));
 
@@ -29,6 +34,42 @@ void ANPCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
 	
+}
+
+void ANPCharacterBase::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	// Server GAS init
+	if(AbilitySystemComponent)
+	{
+		AbilitySystemComponent->InitAbilityActorInfo(this, this);
+	}
+}
+
+void ANPCharacterBase::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+
+	//Client side GAS init
+	AbilitySystemComponent->InitAbilityActorInfo(this, this);
+
+	// Bind input to Ability System
+	if (AbilitySystemComponent && InputComponent)
+	{
+		// Привязки GAS
+		const FGameplayAbilityInputBinds Binds(
+			"Confirm",
+			"Cancel",
+			"ENPAbilityInputID",
+			static_cast<int32>(ENPAbilityInputID::Confirm),
+			static_cast<int32>(ENPAbilityInputID::Cancel));
+
+		// И связываем инпуты с GAS
+		AbilitySystemComponent->BindAbilityActivationToInputComponent(InputComponent, Binds);
+
+		// Для верности советуют задублировать это мероприятие в SetupPlayerInputComponent
+	}
 }
 
 void ANPCharacterBase::EquipWeapon(AActor* Weapon)
@@ -82,5 +123,19 @@ void ANPCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	// Bind input to Ability System
+	if (AbilitySystemComponent && InputComponent)
+	{
+		// Привязки GAS
+		const FGameplayAbilityInputBinds Binds(
+			"Confirm",
+			"Cancel",
+			"ENPAbilityInputID",
+			static_cast<int32>(ENPAbilityInputID::Confirm),
+			static_cast<int32>(ENPAbilityInputID::Cancel));
+
+		// И связываем инпуты с GAS
+		AbilitySystemComponent->BindAbilityActivationToInputComponent(InputComponent, Binds);
+	}
 }
 

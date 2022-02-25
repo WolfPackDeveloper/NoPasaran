@@ -2,8 +2,7 @@
 
 #pragma once
 
-//#include "CoreMinimal.h"
-#include "NoPasaran.h"
+#include "CoreMinimal.h"
 #include "AttributeSet.h"
 #include "AbilitySystemComponent.h"
 #include "NPAttributeSet.generated.h"
