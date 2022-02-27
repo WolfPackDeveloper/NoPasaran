@@ -53,10 +53,32 @@ protected:
 
 	/* GameplayAbilities are owned by Character*/
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Abilities")
-	TArray<TSubclassOf<UGameplayEffect>> GameplayAbilities;
+	TArray<TSubclassOf<UNPGameplayAbility>> GameplayAbilities;
 
 	UPROPERTY()
 	bool bAbilitiesInitiallized = false;
+
+	void AddStartupGameplayAbilities();
+
+	// События для реализации получения урона и смерти.
+
+	// И эта дрисня из примера работать не будет... Блеск. Ладно, потом надо разобраться.
+	// Пример, как я понял, криво сдёрнут из ActionRPG. Там потом и посмотрим.
+	// И мне не нравится тема с BlueprintImplementableEvent.
+	// Также сюда предлагается пихнуть комментарий из указанного проекта к этим функциям.
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnDamaged(float DamageAmount, const FHitResult& HitInfo, const struct FGameplayTagContainer& DamageTags, ANPCharacterBase* InstigatorCharacter, AActor* DamageCauser);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnHealthChanged(float DeltaValue, const struct FGameplayTagContainer& EventTags);
+
+	// А вот за эти функции будет дёргать AttributeSet, когда будут срабатывать указанные выше события в блюпринтах.
+	virtual void HandleDamage(float DamageAmount, const FHitResult& HitInfo, const struct FGameplayTagContainer& DamageTags, ANPCharacterBase* InstigatorCharacter, AActor* DamageCauser);
+
+	virtual void HandleHealthChanged(float DeltaValue, const struct FGameplayTagContainer& EventTags);
+
+	// Это чтобы, собственно, этот самый атрибут сет мог дёргать на функции.
+	friend UNPAttributeSet;
 
 	// ==============================
 

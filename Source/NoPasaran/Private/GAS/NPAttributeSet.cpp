@@ -50,13 +50,6 @@ void UNPAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectModC
 	{
 		SetHealth(FMath::Clamp(GetHealth(), 0.f, GetMaxHealth()));
 
-		//Умертвить, если 0. Мутно... А можно по-другому?
-		//ANPCharacterBase* Player = Cast<ANPCharacterBase>(Data.Target.GetOwnerActor());
-		//if (Player && GetHealth() <= 0.f)
-		//{
-			//Player->SetPlayerIsAlive(false);
-		//}
-
 	}
 }
 

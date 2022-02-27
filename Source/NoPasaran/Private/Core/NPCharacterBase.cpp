@@ -9,10 +9,8 @@
 
 #include "GameplayEffect.h"
 
-// Sets default values
 ANPCharacterBase::ANPCharacterBase()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	AbilitySystemComponent = CreateDefaultSubobject<UNPAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
@@ -29,7 +27,56 @@ UAbilitySystemComponent* ANPCharacterBase::GetAbilitySystemComponent() const
 	return AbilitySystemComponent;
 }
 
-// Called when the game starts or when spawned
+void ANPCharacterBase::AddStartupGameplayAbilities()
+{
+	check(AbilitySystemComponent);
+
+	// Инициализируем абилки и пассивные эффекты (статы) на сервере.
+	if(GetLocalRole() ==ROLE_Authority && !bAbilitiesInitiallized)
+	{
+		// Инициализируем абилки.
+		for (TSubclassOf<UNPGameplayAbility>& StartupAbility : GameplayAbilities)
+		{
+			AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(
+				StartupAbility,
+				1,
+				static_cast<int32>(StartupAbility.GetDefaultObject()->AbilityInputID),
+				this));
+		}
+
+		// Теперь статы.
+		for (TSubclassOf<UGameplayEffect>& GameplayEffect : PassiveGameplayEffects)
+		{
+			FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
+			EffectContext.AddSourceObject(this);
+
+			FGameplayEffectSpecHandle EffectHandle = AbilitySystemComponent->MakeOutgoingSpec(
+				GameplayEffect,
+				1,
+				EffectContext);
+
+			if (EffectHandle.IsValid())
+			{
+				FActiveGameplayEffectHandle GEHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(
+					*EffectHandle.Data.Get(),
+					AbilitySystemComponent);
+			}
+		}
+
+		bAbilitiesInitiallized = true;
+	}
+}
+
+void ANPCharacterBase::HandleDamage(float DamageAmount, const FHitResult& HitInfo, const struct FGameplayTagContainer& DamageTags, ANPCharacterBase* InstigatorCharacter, AActor* DamageCauser)
+{
+
+}
+
+void ANPCharacterBase::HandleHealthChanged(float DeltaValue, const struct FGameplayTagContainer& EventTags)
+{
+
+}
+
 void ANPCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
