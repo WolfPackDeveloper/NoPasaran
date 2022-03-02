@@ -66,9 +66,26 @@ protected:
 	// Пример, как я понял, криво сдёрнут из ActionRPG. Там потом и посмотрим.
 	// И мне не нравится тема с BlueprintImplementableEvent.
 	// Также сюда предлагается пихнуть комментарий из указанного проекта к этим функциям.
+
+	/**
+	 * Called when character takes damage, which may have killed them
+	 *
+	 * @param DamageAmount Amount of damage that was done, not clamped based on current health
+	 * @param HitInfo The hit info that generated this damage
+	 * @param DamageTags The gameplay tags of the event that did the damage
+	 * @param InstigatorCharacter The character that initiated this damage
+	 * @param DamageCauser The actual actor that did the damage, might be a weapon or projectile
+	 */
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnDamaged(float DamageAmount, const FHitResult& HitInfo, const struct FGameplayTagContainer& DamageTags, ANPCharacterBase* InstigatorCharacter, AActor* DamageCauser);
 
+	/**
+	 * Called when health is changed, either from healing or from being damaged
+	 * For damage this is called in addition to OnDamaged/OnKilled
+	 *
+	 * @param DeltaValue Change in health value, positive for heal, negative for cost. If 0 the delta is unknown
+	 * @param EventTags The gameplay tags of the event that changed mana
+	 */
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnHealthChanged(float DeltaValue, const struct FGameplayTagContainer& EventTags);
 
@@ -78,6 +95,7 @@ protected:
 	virtual void HandleHealthChanged(float DeltaValue, const struct FGameplayTagContainer& EventTags);
 
 	// Это чтобы, собственно, этот самый атрибут сет мог дёргать на функции.
+	// Friended to allow access to handle functions above
 	friend UNPAttributeSet;
 
 	// ==============================

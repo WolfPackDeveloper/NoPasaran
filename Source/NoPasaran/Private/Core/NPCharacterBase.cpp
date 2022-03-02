@@ -69,12 +69,15 @@ void ANPCharacterBase::AddStartupGameplayAbilities()
 
 void ANPCharacterBase::HandleDamage(float DamageAmount, const FHitResult& HitInfo, const struct FGameplayTagContainer& DamageTags, ANPCharacterBase* InstigatorCharacter, AActor* DamageCauser)
 {
-
+	OnDamaged(DamageAmount, HitInfo, DamageTags, InstigatorCharacter, DamageCauser);
 }
 
 void ANPCharacterBase::HandleHealthChanged(float DeltaValue, const struct FGameplayTagContainer& EventTags)
 {
-
+	if (bAbilitiesInitiallized)
+	{
+		OnHealthChanged(DeltaValue, EventTags);
+	}
 }
 
 void ANPCharacterBase::BeginPlay()
